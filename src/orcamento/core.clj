@@ -24,15 +24,25 @@
   (with-open [r (io/reader (str "resources/" arquivo))]
     (doall (line-seq r))))
 
-(defn filtra [arquivo]
+(defn filtra-gastos [arquivo]
   (let [gastos (carrega arquivo)]
     (filter #(re-matches #"\d\d\.\d\d\.\d\d\d\d.*" %) gastos)))
+
+;; FIXME: regex correta, remover . e considerar o negativo
+(defn texto->gastos [arquivo]
+  (let [texto (filtra-gastos arquivo)]
+    (map #(re-find #"\d\d,\d\d" %) texto)))
+
+(defn formata-em-real [texto]
+  (if (not (nil? texto))
+    (-> texto
+        (str/replace "." "" )
+        (str/replace "," "." ))))
 
 (defn -main []
   (let [lista [{:prazo 1 :valor 32} {:prazo 7 :valor 8}]]
     (do
-      (pprint (filtra "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt"))
-      (pprint (valor-mensal lista))
-      (pprint (valor-mensal (proximos lista)))
-      (pprint lista)
+      (pprint (filtra-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt"))
+      (pprint (texto->gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt"))
+      (pprint (map formata-em-real (texto->gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt")))
       (pprint (proximos lista)))))
