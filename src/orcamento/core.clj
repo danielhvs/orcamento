@@ -15,7 +15,6 @@
 (defn valor-mensal [lista]
   (reduce + (map :valor lista)))
 
-
 (defn salva [arquivo conteudo]
   (-> (str "resources/" arquivo)
       (spit conteudo)))
@@ -29,17 +28,21 @@
     (filter #(re-matches #"\d\d\.\d\d\.\d\d\d\d.*" %) gastos)))
 
 (defn formata-dinheiro [texto]
-  (-> texto
-      (str/replace "." "" )
-      (str/replace "," "." )))
+  (read-string
+   (-> texto
+       (str/replace "." "" )
+       (str/replace "," "." ))))
 
 (defn parse-gasto [texto]
   {:data (subs texto 0 10)
-   :descricao (str/trim (subs texto 10 49))
-   :valor (formata-dinheiro (str/trim (subs texto 49 69)))
+   :descricao (str/trim (subs texto 10 50))
+   :valor (formata-dinheiro (str/trim (subs texto 50 69)))
    :valor-dolar (formata-dinheiro (str/trim (subs texto 69 81)))
    }
 )
+
+(defn soma [gastos]
+  (reduce + (map :valor gastos)))
 
 (defn -main []
   (let [lista [{:prazo 1 :valor 32} {:prazo 7 :valor 8}]]
@@ -47,4 +50,5 @@
       (pprint (carrega "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt"))
       (pprint (filtra-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt"))
       (pprint (map parse-gasto (filtra-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt")))
+      (pprint (str "soma: " (soma (map parse-gasto (filtra-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt")))))
       (pprint (proximos lista)))))
