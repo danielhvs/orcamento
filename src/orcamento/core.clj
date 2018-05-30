@@ -28,21 +28,23 @@
   (let [gastos (carrega arquivo)]
     (filter #(re-matches #"\d\d\.\d\d\.\d\d\d\d.*" %) gastos)))
 
-;; FIXME: regex correta, remover . e considerar o negativo
-(defn texto->gastos [arquivo]
-  (let [texto (filtra-gastos arquivo)]
-    (map #(re-find #"\d\d,\d\d" %) texto)))
+(defn formata-dinheiro [texto]
+  (-> texto
+      (str/replace "." "" )
+      (str/replace "," "." )))
 
-(defn formata-em-real [texto]
-  (if (not (nil? texto))
-    (-> texto
-        (str/replace "." "" )
-        (str/replace "," "." ))))
+(defn parse-gasto [texto]
+  {:data (subs texto 0 10)
+   :descricao (str/trim (subs texto 10 49))
+   :valor (formata-dinheiro (str/trim (subs texto 49 69)))
+   :valor-dolar (formata-dinheiro (str/trim (subs texto 69 81)))
+   }
+)
 
 (defn -main []
   (let [lista [{:prazo 1 :valor 32} {:prazo 7 :valor 8}]]
     (do
+      (pprint (carrega "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt"))
       (pprint (filtra-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt"))
-      (pprint (texto->gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt"))
-      (pprint (map formata-em-real (texto->gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt")))
+      (pprint (map parse-gasto (filtra-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt")))
       (pprint (proximos lista)))))
