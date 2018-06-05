@@ -33,22 +33,36 @@
        (str/replace "." "" )
        (str/replace "," "." ))))
 
+(defn parse-prazo [gasto]
+  (let [string-prazo (re-find #"\d\d\/\d\d" (:descricao gasto))]
+    (if string-prazo
+      (inc
+       (- (read-string (subs string-prazo 3 5)) 
+          (read-string (subs string-prazo 0 2))))
+      1)))
+
 (defn parse-gasto [texto]
-  {:data (subs texto 0 10)
-   :descricao (str/trim (subs texto 10 50))
-   :valor (formata-dinheiro (str/trim (subs texto 50 69)))
-   :valor-dolar (formata-dinheiro (str/trim (subs texto 69 81)))
-   }
-)
+  (let [gasto
+        {:data (subs texto 0 10)
+         :descricao (str/trim (subs texto 10 50))
+         :valor (formata-dinheiro (str/trim (subs texto 50 69)))
+         :valor-dolar (formata-dinheiro (str/trim (subs texto 69 81)))
+         }]
+    (assoc gasto :prazo (parse-prazo gasto))))
 
 (defn soma [gastos]
   (reduce + (map :valor gastos)))
 
+(defn projeta-proximos [gastos]
+  (proximos gastos))
+
 (defn -main []
-  (let [lista [{:prazo 1 :valor 32} {:prazo 7 :valor 8}]]
+  (let [lista [{:prazo 1 :valor 32} {:prazo 7 :valor 8}]
+        gastos (map parse-gasto (filtra-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt"))]
+
     (do
       (pprint (carrega "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt"))
       (pprint (filtra-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt"))
       (pprint (map parse-gasto (filtra-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt")))
       (pprint (str "soma: " (soma (map parse-gasto (filtra-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt")))))
-      (pprint (proximos lista)))))
+      (pprint (proximos gastos)))))
