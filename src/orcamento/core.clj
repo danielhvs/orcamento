@@ -50,6 +50,11 @@
          }]
     (assoc gasto :prazo (parse-prazo gasto))))
 
+; TODO filtrar para remover o "PGTO DEBITO CONTA 1453 00000973"
+(defn parse-gastos [arquivo]
+  (let [gastos (map parse-gasto (filtra-gastos arquivo))]
+     gastos))
+
 (defn soma [gastos]
   (reduce + (map :valor gastos)))
 
@@ -58,11 +63,8 @@
 
 (defn -main []
   (let [lista [{:prazo 1 :valor 32} {:prazo 7 :valor 8}]
-        gastos (map parse-gasto (filtra-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt"))]
+        gastos (parse-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt")]
 
     (do
-      (pprint (carrega "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt"))
-      (pprint (filtra-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt"))
-      (pprint (map parse-gasto (filtra-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt")))
-      (pprint (str "soma: " (soma (map parse-gasto (filtra-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt")))))
+      (pprint (parse-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt"))
       (pprint (proximos gastos)))))
