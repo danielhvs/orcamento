@@ -55,19 +55,26 @@
      gastos))
 
 (defn remove-debito-em-conta [gastos total]
-  (+ (- (:valor
-         (first (filter #(re-matches #"PGTO DEBITO CONTA 1453.*" (:descricao %)) gastos))))
-   total))
+  (let [debito-em-conta (filter #(re-matches #"PGTO DEBITO CONTA 1453.*" (:descricao %)) gastos)]
+    (if (empty? debito-em-conta)
+      total
+      (+ (- (:valor
+             (first (filter #(re-matches #"PGTO DEBITO CONTA 1453.*" (:descricao %)) gastos))))
+         total))))
 
 (defn soma [gastos]
   (remove-debito-em-conta gastos
    (valor-mensal gastos)))
 
-(defn projeta-proximos [gastos]
-  (proximos gastos))
+(defn max-prazo [gastos]
+  (apply max (map :prazo gastos)))
+
+(defn todas-faturas [gastos]
+  (take (max-prazo gastos) (iterate proximos gastos)))
 
 (defn -main []
   (let [lista [{:prazo 1 :valor 32} {:prazo 7 :valor 8}]
         gastos (parse-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt")]
     (do
-      (pprint (soma gastos)))))
+      (pprint (map soma (todas-faturas gastos)))
+)))
