@@ -9,8 +9,8 @@
 (defn dec-prazo [item]
   (assoc item :prazo (dec (:prazo item))))
 
-(defn proximos [lista]
-  (filter #(> (:prazo %) 0) (map dec-prazo lista)))
+(defn proximos [gastos]
+  (filter #(> (:prazo %) 0) (map dec-prazo gastos)))
 
 (defn valor-mensal [lista]
   (reduce + (map :valor lista)))
@@ -77,4 +77,5 @@
         gastos (parse-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt")]
     (do
       (pprint (map soma (todas-faturas gastos)))
+      (pprint (str "total geral: " (reduce + (map soma (todas-faturas gastos)))))
 )))
