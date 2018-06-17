@@ -78,7 +78,7 @@
   (apply max (map :prazo gastos)))
 
 (defn todas-faturas [gastos]
-  (take (max-prazo gastos) (iterate proximos gastos)))
+  (take (inc (max-prazo gastos)) (iterate proximos gastos)))
 
 (defn nomes-dos-arquivos [diretorio]
   (let [files (file-seq (clojure.java.io/file diretorio))]
