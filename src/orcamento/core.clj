@@ -104,16 +104,20 @@
   (let [mapas-a-juntar
         (filter #(clojure.string/includes? (:nome %) mes-ano) mapa-todo)]
     (reduce junta (pad-com-zeros mapas-a-juntar))))
-; fazer pad aqui
+
+(defn ve [projecao]
+  (view (xy-plot (take (count projecao) (range)) projecao)))
 
 (defn -main []
   (let [nomes-arquivos (nomes-dos-arquivos "resources") 
         todos-gastos (map parse-gastos nomes-arquivos) 
         resultado (map #(assoc (calcula-gastos %1) :nome %2) todos-gastos nomes-arquivos)]
-    (junta-todos resultado "Jun_18")))
+    (ve (:projecao (junta-todos resultado "Jun_18")))))
 
 ;; para testes
 (def nomes-arquivos (nomes-dos-arquivos "resources"))
 (def todos-gastos (map parse-gastos nomes-arquivos))
 (def resultado (map #(assoc (calcula-gastos %1) :nome %2) todos-gastos nomes-arquivos))
-(view (histogram (sample-normal 1000)))
+
+(ve (:projecao (first resultado)))
+(ve (:projecao (second resultado)))
