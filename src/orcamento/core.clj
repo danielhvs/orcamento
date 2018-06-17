@@ -88,5 +88,5 @@
 (defn -main []
   (let [nomes-arquivos (nomes-dos-arquivos "resources") 
         todos-gastos (map parse-gastos nomes-arquivos) 
-        resultado (map calcula-gastos todos-gastos)]
-    resultado))
+        resultado (map #(assoc (calcula-gastos %1) :nome %2) todos-gastos nomes-arquivos)]
+     resultado))
