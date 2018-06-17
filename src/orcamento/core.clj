@@ -33,12 +33,17 @@
        (str/replace "." "" )
        (str/replace "," "." ))))
 
+(defn remove-zero-esquerda-string [numero-string]
+  (if (= \0 (first numero-string))
+    (subs numero-string 1) 
+    numero-string))
+
 (defn parse-prazo [gasto]
   (let [string-prazo (re-find #"\d\d\/\d\d" (:descricao gasto))]
     (if string-prazo
       (inc
-       (- (read-string (subs string-prazo 3 5)) 
-          (read-string (subs string-prazo 0 2))))
+       (- (read-string (remove-zero-esquerda-string (subs string-prazo 3 5))) 
+          (read-string (remove-zero-esquerda-string (subs string-prazo 0 2)))))
       1)))
 
 (defn parse-gasto [texto]
@@ -81,9 +86,7 @@
    :total (reduce + (map soma (todas-faturas gastos)))})
 
 (defn -main []
-  (let [gastos (parse-gastos "OUROCARD_PLATINUM_ESTILO_MASTERCARD-Jun_18.txt")]
-    (calcula-gastos gastos)))
-
-
-
-
+  (let [nomes-arquivos (nomes-dos-arquivos "resources") 
+        todos-gastos (map parse-gastos nomes-arquivos) 
+        resultado (map calcula-gastos todos-gastos)]
+    resultado))
