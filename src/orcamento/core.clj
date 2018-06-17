@@ -72,10 +72,18 @@
 (defn todas-faturas [gastos]
   (take (max-prazo gastos) (iterate proximos gastos)))
 
+(defn nomes-dos-arquivos [diretorio]
+  (let [files (file-seq (clojure.java.io/file diretorio))]
+    (->> files (filter #(.isFile %)) (map #(.getName %)) )))
+
+(defn calcula-gastos [gastos]
+  {:projecao (map soma (todas-faturas gastos))
+   :total (reduce + (map soma (todas-faturas gastos)))})
+
 (defn -main []
-  (let [lista [{:prazo 1 :valor 32} {:prazo 7 :valor 8}]
-        gastos (parse-gastos "OUROCARD_PLATINUM_ESTILO_VISA-Dez_17.txt")]
-    (do
-      (pprint (map soma (todas-faturas gastos)))
-      (pprint (str "total geral: " (reduce + (map soma (todas-faturas gastos)))))
-)))
+  (let [gastos (parse-gastos "OUROCARD_PLATINUM_ESTILO_MASTERCARD-Jun_18.txt")]
+    (calcula-gastos gastos)))
+
+
+
+
