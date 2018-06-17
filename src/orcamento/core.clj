@@ -85,6 +85,14 @@
   {:projecao (map soma (todas-faturas gastos))
    :total (reduce + (map soma (todas-faturas gastos)))})
 
+(defn pad [n coll val]
+  (take n (concat coll (repeat val))))
+
+(defn pad-com-zeros [mapas]
+  (let [maior-tamanho (apply max (map #(count (:projecao %)) mapas))]
+    (map #(assoc % :projecao (pad maior-tamanho (:projecao %) 0)) 
+         mapas)))
+
 (defn junta [m1 m2] 
   {:projecao (map #(+ %1 %2) (:projecao m1) (:projecao m2)) 
    :total (+ (:total m1) (:total m2))})
@@ -92,10 +100,16 @@
 (defn junta-todos [mapa-todo mes-ano]
   (let [mapas-a-juntar
         (filter #(clojure.string/includes? (:nome %) mes-ano) mapa-todo)]
-    (reduce junta mapas-a-juntar)))
+    (reduce junta (pad-com-zeros mapas-a-juntar))))
+; fazer pad aqui
 
 (defn -main []
   (let [nomes-arquivos (nomes-dos-arquivos "resources") 
         todos-gastos (map parse-gastos nomes-arquivos) 
         resultado (map #(assoc (calcula-gastos %1) :nome %2) todos-gastos nomes-arquivos)]
     (junta-todos resultado "Jun_18")))
+
+;; para testes
+(def nomes-arquivos (nomes-dos-arquivos "resources"))
+(def todos-gastos (map parse-gastos nomes-arquivos))
+(def resultado (map #(assoc (calcula-gastos %1) :nome %2) todos-gastos nomes-arquivos))
