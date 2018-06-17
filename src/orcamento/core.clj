@@ -85,8 +85,17 @@
   {:projecao (map soma (todas-faturas gastos))
    :total (reduce + (map soma (todas-faturas gastos)))})
 
+(defn junta [m1 m2] 
+  {:projecao (map #(+ %1 %2) (:projecao m1) (:projecao m2)) 
+   :total (+ (:total m1) (:total m2))})
+
+(defn junta-todos [mapa-todo mes-ano]
+  (let [mapas-a-juntar
+        (filter #(clojure.string/includes? (:nome %) mes-ano) mapa-todo)]
+    (reduce junta mapas-a-juntar)))
+
 (defn -main []
   (let [nomes-arquivos (nomes-dos-arquivos "resources") 
         todos-gastos (map parse-gastos nomes-arquivos) 
         resultado (map #(assoc (calcula-gastos %1) :nome %2) todos-gastos nomes-arquivos)]
-     resultado))
+    (junta-todos resultado "Jun_18")))
