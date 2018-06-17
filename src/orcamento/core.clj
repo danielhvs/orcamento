@@ -4,6 +4,9 @@
    [clojure.java.io :as io]
    [clojure.string :as str]
    [clojure.pprint :refer :all]
+   [incanter.core :refer :all]
+   [incanter.charts :refer :all]
+   [incanter.stats :refer :all]
 ))
 
 (defn dec-prazo [item]
@@ -113,3 +116,4 @@
 (def nomes-arquivos (nomes-dos-arquivos "resources"))
 (def todos-gastos (map parse-gastos nomes-arquivos))
 (def resultado (map #(assoc (calcula-gastos %1) :nome %2) todos-gastos nomes-arquivos))
+(view (histogram (sample-normal 1000)))
