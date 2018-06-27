@@ -30,6 +30,11 @@
   (let [gastos (carrega arquivo)]
     (filter #(re-matches #"\d\d\.\d\d\.\d\d\d\d.*" %) gastos)))
 
+(defn formata-reais [texto]
+  (-> texto
+      (str/replace "," "" )
+      (str/replace "." "," )))
+
 (defn formata-dinheiro [texto]
   (read-string
    (-> texto
@@ -80,9 +85,12 @@
 (defn todas-faturas [gastos]
   (take (inc (max-prazo gastos)) (iterate proximos gastos)))
 
-(defn nomes-dos-arquivos [diretorio]
+(defn nomes-dos-arquivos [diretorio mes-ano]
   (let [files (file-seq (clojure.java.io/file diretorio))]
-    (->> files (filter #(.isFile %)) (map #(.getName %)) )))
+    (->> files 
+         (filter #(.isFile %)) 
+         (map #(.getName %)) 
+         (filter #(clojure.string/includes? % mes-ano)))))
 
 (defn calcula-gastos [gastos]
   {:projecao (map soma (todas-faturas gastos))
@@ -108,16 +116,29 @@
 (defn ve [projecao]
   (view (xy-plot (take (count projecao) (range)) projecao)))
 
-(defn -main []
-  (let [nomes-arquivos (nomes-dos-arquivos "resources") 
+(def SEPARADOR "|")
+
+(defn item->csv [item]
+  (str (:data item) "|" (:descricao item) "|R$|" (formata-reais (:valor item)) "|" (:prazo item) "\n"))
+
+(defn ->csv [mapa]
+  (map item->csv mapa))
+
+;; mes-ano, por exemplo Jun_18
+(defn -main [mes-ano]
+  (let [nomes-arquivos (nomes-dos-arquivos "resources" mes-ano) 
         todos-gastos (map parse-gastos nomes-arquivos) 
         resultado (map #(assoc (calcula-gastos %1) :nome %2) todos-gastos nomes-arquivos)]
-    (ve (:projecao (junta-todos resultado "Jun_18")))))
+    (do
+      (println (->csv (first todos-gastos)))
+      (println)
+      (println (->csv (second todos-gastos)))
+)))
 
 ;; para testes
-(def nomes-arquivos (nomes-dos-arquivos "resources"))
+(def nomes-arquivos (nomes-dos-arquivos "resources" "Jul_18"))
 (def todos-gastos (map parse-gastos nomes-arquivos))
 (def resultado (map #(assoc (calcula-gastos %1) :nome %2) todos-gastos nomes-arquivos))
-
-(ve (:projecao (first resultado)))
-(ve (:projecao (second resultado)))
+;(ve (:projecao (first resultado)))
+;(ve (:projecao (second resultado)))
+;(ve (:projecao (junta-todos resultado "Jun_18")))))
