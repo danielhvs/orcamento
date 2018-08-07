@@ -7,6 +7,8 @@
    [incanter.core :refer :all]
    [incanter.charts :refer :all]
    [incanter.stats :refer :all]
+   [clojure.java.io :as io]
+   [clojure.data.csv :as csv]
 ))
 
 (defn dec-prazo [item]
@@ -142,3 +144,20 @@
 ;(ve (:projecao (first resultado)))
 ;(ve (:projecao (second resultado)))
 ;(ve (:projecao (junta-todos resultado "Jun_18")))))
+
+(def nomes-arquivos (nomes-dos-arquivos "resources" "extrato.csv"))
+(defn csv-data->maps [csv-data]
+  (map zipmap
+       (->> (first csv-data) ;; First row is the header
+            (map keyword) ;; Drop if you want string keys instead
+            repeat)
+       (rest csv-data)))
+
+(defn le [nome-arquivo]
+  (with-open [reader (io/reader nome-arquivo)]
+    (doall
+     (csv-data->maps 
+      (csv/read-csv reader)))))
+
+(map :Valor
+ (le "resources/extrato.csv"))
