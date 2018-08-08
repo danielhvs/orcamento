@@ -138,12 +138,12 @@
 )))
 
 ;; para testes
-(def nomes-arquivos (nomes-dos-arquivos "resources" "Jul_18"))
+(def nomes-arquivos (nomes-dos-arquivos "resources" "Ago_18"))
 (def todos-gastos (map parse-gastos nomes-arquivos))
 (def resultado (map #(assoc (calcula-gastos %1) :nome %2) todos-gastos nomes-arquivos))
 ;(ve (:projecao (first resultado)))
 ;(ve (:projecao (second resultado)))
-;(ve (:projecao (junta-todos resultado "Jun_18")))))
+;(ve (:projecao (junta-todos resultado "Ago_18")))
 
 (def nomes-arquivos (nomes-dos-arquivos "resources" "extrato.csv"))
 (defn csv-data->maps [csv-data]
