@@ -118,8 +118,6 @@
 (defn ve [projecao]
   (view (xy-plot (take (count projecao) (range)) projecao)))
 
-(def SEPARADOR "|")
-
 (defn item->csv [item]
   (str (:data item) "|" (:descricao item) "|R$|" (formata-reais (:valor item)) "|" (:prazo item) "\n"))
 
@@ -138,12 +136,14 @@
 )))
 
 ;; para testes
-(def nomes-arquivos (nomes-dos-arquivos "resources" "Ago_18"))
+;; ATENCAO! Definir abaixo
+(def MES_ANO "Out_18")
+(def nomes-arquivos (nomes-dos-arquivos "resources" MES_ANO))
 (def todos-gastos (map parse-gastos nomes-arquivos))
 (def resultado (map #(assoc (calcula-gastos %1) :nome %2) todos-gastos nomes-arquivos))
 ;(ve (:projecao (first resultado)))
 ;(ve (:projecao (second resultado)))
-;(ve (:projecao (junta-todos resultado "Ago_18")))
+;(ve (:projecao (junta-todos resultado "MES_ANO)))
 
 (def nomes-arquivos (nomes-dos-arquivos "resources" "extrato.csv"))
 (defn csv-data->maps [csv-data]
