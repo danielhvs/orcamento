@@ -130,9 +130,8 @@
         todos-gastos (map parse-gastos nomes-arquivos) 
         resultado (map #(assoc (calcula-gastos %1) :nome %2) todos-gastos nomes-arquivos)]
     (do
-      (println (->csv (first todos-gastos)))
-      (println)
-      (println (->csv (second todos-gastos)))
+      (spit "arquivo1.csv" (reduce str (->csv (first todos-gastos))))
+      (spit "arquivo2.csv" (reduce str (->csv (second todos-gastos))))
 )))
 
 ;; para testes

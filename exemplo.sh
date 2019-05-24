@@ -1,2 +1,1 @@
-lein run Jul_18 > out.csv &&
-emacs out.csv out2.csv
+lein run Jun_19 && libreoffice arquivo1.csv arquivo2.csv
