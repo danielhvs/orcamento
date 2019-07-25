@@ -144,7 +144,6 @@
 ;(ve (:projecao (second resultado)))
 ;(ve (:projecao (junta-todos resultado "MES_ANO)))
 
-(def nomes-arquivos (nomes-dos-arquivos "resources" "extrato.csv"))
 (defn csv-data->maps [csv-data]
   (map zipmap
        (->> (first csv-data) ;; First row is the header
@@ -158,5 +157,3 @@
      (csv-data->maps 
       (csv/read-csv reader)))))
 
-(map :Valor
- (le "resources/extrato.csv"))
